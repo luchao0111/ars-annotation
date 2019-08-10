@@ -11,7 +11,7 @@ JDK1.8+
 <dependency>
     <groupId>com.arsframework</groupId>
     <artifactId>ars-annotation</artifactId>
-    <version>1.4.5</version>
+    <version>1.4.6</version>
 </dependency>
 ```
 
@@ -582,4 +582,7 @@ public class Test {
 2. 支持接口默认方法参数校验
 3. 新增```com.arsframework.annotation.Eq```、```com.arsframework.annotation.Ne```、```com.arsframework.annotation.Is```、
 ```com.arsframework.annotation.Not```、```com.arsframework.annotation.Bool```注解
+
+### v1.4.6
+1. 将所有注解```RetentionPolicy```属性设置为```RUNTIME```。
 
