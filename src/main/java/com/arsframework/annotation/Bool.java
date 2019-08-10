@@ -16,7 +16,7 @@ public @interface Bool {
     /**
      * 默认异常信息
      */
-    String DEFAULT_EXCEPTION_MESSAGE = "The value of argument '%s' must be %b";
+    String DEFAULT_EXCEPTION_MESSAGE = "Argument '%s' must be %b";
 
     /**
      * 获取参数真/假值

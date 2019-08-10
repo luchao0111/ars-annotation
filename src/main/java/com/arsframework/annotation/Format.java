@@ -1,9 +1,9 @@
 package com.arsframework.annotation;
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 参数格式校验注解，适用于数字、字符串类型参数
@@ -16,7 +16,7 @@ public @interface Format {
     /**
      * 默认异常信息
      */
-    String DEFAULT_EXCEPTION_MESSAGE = "The format of argument '%s' must be matched for '%s'";
+    String DEFAULT_EXCEPTION_MESSAGE = "Argument '%s' must be matched for '%s'";
 
     /**
      * 获取参数匹配格式（正则表达式）

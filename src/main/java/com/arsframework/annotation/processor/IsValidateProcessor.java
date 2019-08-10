@@ -2,12 +2,12 @@ package com.arsframework.annotation.processor;
 
 import java.lang.annotation.Annotation;
 
-import javax.lang.model.type.MirroredTypeException;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.type.MirroredTypeException;
 
+import com.arsframework.annotation.Is;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.tree.JCTree;
-import com.arsframework.annotation.Is;
 
 /**
  * 参数固定值校验注解处理器
@@ -32,9 +32,9 @@ public class IsValidateProcessor extends AbstractValidateProcessor {
 
     @Override
     protected JCTree.JCIf buildValidateCondition(Symbol.VarSymbol param, Class<? extends Annotation> annotation) {
-        Is is = (Is) Validates.lookupAnnotation(param, annotation);
+        Is is = (Is)Validates.lookupAnnotation(param, annotation);
         JCTree.JCExpression condition = Validates.buildIsExpression(maker, names, param, is.value());
         return Validates.buildValidateException(maker, names, param, condition, this.getException(is), is.message(),
-                param.name.toString(), is.value());
+            param.name.toString(), is.value());
     }
 }

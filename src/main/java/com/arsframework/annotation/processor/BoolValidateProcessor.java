@@ -2,12 +2,12 @@ package com.arsframework.annotation.processor;
 
 import java.lang.annotation.Annotation;
 
-import javax.lang.model.type.MirroredTypeException;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.type.MirroredTypeException;
 
+import com.arsframework.annotation.Bool;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.tree.JCTree;
-import com.arsframework.annotation.Bool;
 
 /**
  * 参数真/假值校验注解处理器
@@ -32,9 +32,9 @@ public class BoolValidateProcessor extends AbstractValidateProcessor {
 
     @Override
     protected JCTree.JCIf buildValidateCondition(Symbol.VarSymbol param, Class<? extends Annotation> annotation) {
-        Bool bool = (Bool) Validates.lookupAnnotation(param, annotation);
+        Bool bool = (Bool)Validates.lookupAnnotation(param, annotation);
         JCTree.JCExpression condition = Validates.buildBoolExpression(maker, names, param, bool.value());
         return Validates.buildValidateException(maker, names, param, condition, this.getException(bool), bool.message(),
-                param.name.toString(), bool.value());
+            param.name.toString(), bool.value());
     }
 }

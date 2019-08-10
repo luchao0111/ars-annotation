@@ -2,12 +2,12 @@ package com.arsframework.annotation.processor;
 
 import java.lang.annotation.Annotation;
 
-import javax.lang.model.type.MirroredTypeException;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.type.MirroredTypeException;
 
+import com.arsframework.annotation.Max;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.tree.JCTree;
-import com.arsframework.annotation.Max;
 
 /**
  * 参数最大值校验注解处理器
@@ -32,9 +32,9 @@ public class MaxValidateProcessor extends AbstractValidateProcessor {
 
     @Override
     protected JCTree.JCIf buildValidateCondition(Symbol.VarSymbol param, Class<? extends Annotation> annotation) {
-        Max max = (Max) Validates.lookupAnnotation(param, annotation);
+        Max max = (Max)Validates.lookupAnnotation(param, annotation);
         JCTree.JCExpression condition = Validates.buildMaxExpression(maker, names, param, max.value());
         return Validates.buildValidateException(maker, names, param, condition, this.getException(max), max.message(),
-                param.name.toString(), max.value());
+            param.name.toString(), max.value());
     }
 }

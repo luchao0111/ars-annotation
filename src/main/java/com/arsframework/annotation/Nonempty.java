@@ -1,9 +1,9 @@
 package com.arsframework.annotation;
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 参数非空校验注解，适用于除基本数据类型以外的参数
@@ -16,7 +16,7 @@ public @interface Nonempty {
     /**
      * 默认异常信息
      */
-    String DEFAULT_EXCEPTION_MESSAGE = "The value of argument '%s' must not be empty";
+    String DEFAULT_EXCEPTION_MESSAGE = "Argument '%s' must not be empty";
 
     /**
      * 针对字符串参数是否允许空白

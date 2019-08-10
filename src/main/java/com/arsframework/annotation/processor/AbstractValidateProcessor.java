@@ -1,34 +1,33 @@
 package com.arsframework.annotation.processor;
 
-import java.util.Set;
-import java.util.List;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.ArrayList;
-import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Set;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.MirroredTypesException;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-
-import com.sun.source.tree.Tree;
-import com.sun.tools.javac.util.Name;
-import com.sun.tools.javac.util.Names;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.ListBuffer;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.api.JavacTrees;
-import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import javax.lang.model.type.TypeMirror;
 
 import com.arsframework.annotation.Ignore;
+import com.sun.source.tree.Tree;
+import com.sun.tools.javac.api.JavacTrees;
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.tree.TreeMaker;
+import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Name;
+import com.sun.tools.javac.util.Names;
 
 /**
  * 参数校验注解处理器抽象实现
@@ -43,14 +42,15 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0 ? SourceVersion.latest() : SourceVersion.RELEASE_8;
+        return SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0 ? SourceVersion.latest()
+            : SourceVersion.RELEASE_8;
     }
 
     @Override
     public synchronized void init(ProcessingEnvironment env) {
         super.init(env);
         this.trees = JavacTrees.instance(env);
-        this.context = ((JavacProcessingEnvironment) env).getContext();
+        this.context = ((JavacProcessingEnvironment)env).getContext();
         this.names = Names.instance(this.context);
         this.maker = TreeMaker.instance(this.context);
     }
@@ -59,21 +59,21 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment env) {
         for (String type : this.getSupportedAnnotationTypes()) {
             try {
-                Class<? extends Annotation> annotation = (Class<? extends Annotation>) Class.forName(type);
+                Class<? extends Annotation> annotation = (Class<? extends Annotation>)Class.forName(type);
                 for (Element element : env.getElementsAnnotatedWith(annotation)) {
-                    if (element.getKind() == ElementKind.ENUM || element.getKind() == ElementKind.CLASS
-                            || element.getKind() == ElementKind.INTERFACE) { // 枚举/类/接口元素
-                        for (JCTree def : ((JCTree.JCClassDecl) trees.getTree(element)).defs) {
-                            if (def.getKind() == Tree.Kind.METHOD && ((JCTree.JCMethodDecl) def).body != null) {
-                                this.buildValidateBlock(((JCTree.JCMethodDecl) def).sym, annotation);
+                    if (Validates.isKind(element.getKind(), ElementKind.ENUM, ElementKind.CLASS,
+                        ElementKind.INTERFACE)) {
+                        for (JCTree def : ((JCTree.JCClassDecl)trees.getTree(element)).defs) {
+                            if (def.getKind() == Tree.Kind.METHOD && ((JCTree.JCMethodDecl)def).body != null) {
+                                this.buildValidateBlock(((JCTree.JCMethodDecl)def).sym, annotation);
                             }
                         }
-                    } else if ((element.getKind() == ElementKind.CONSTRUCTOR || element.getKind() == ElementKind.METHOD)
-                            && Validates.lookupAnnotation(((Symbol) element).owner, annotation) == null) { // 方法元素
-                        this.buildValidateBlock((Symbol.MethodSymbol) element, annotation);
-                    } else if (element.getKind() == ElementKind.PARAMETER
-                            && Validates.lookupAnnotation(((Symbol) element).owner, annotation) == null) { // 参数元素
-                        this.buildValidateBlock((Symbol.VarSymbol) element, annotation);
+                    } else if (Validates.isKind(element.getKind(), ElementKind.CONSTRUCTOR, ElementKind.METHOD)
+                        && Validates.lookupAnnotation(((Symbol)element).owner, annotation) == null) {
+                        this.buildValidateBlock((Symbol.MethodSymbol)element, annotation);
+                    } else if (Validates.isKind(element.getKind(), ElementKind.PARAMETER)
+                        && Validates.lookupAnnotation(((Symbol)element).owner, annotation) == null) {
+                        this.buildValidateBlock((Symbol.VarSymbol)element, annotation);
                     }
                 }
             } catch (ClassNotFoundException e) {
@@ -91,10 +91,10 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
      */
     protected boolean isConstructorInvocation(JCTree.JCStatement statement) {
         if (statement instanceof JCTree.JCExpressionStatement) {
-            JCTree.JCExpression expression = ((JCTree.JCExpressionStatement) statement).expr;
+            JCTree.JCExpression expression = ((JCTree.JCExpressionStatement)statement).expr;
             if (expression instanceof JCTree.JCMethodInvocation
-                    && ((JCTree.JCMethodInvocation) expression).meth.getKind() == Tree.Kind.IDENTIFIER) {
-                Name name = ((JCTree.JCIdent) ((JCTree.JCMethodInvocation) expression).meth).name;
+                && ((JCTree.JCMethodInvocation)expression).meth.getKind() == Tree.Kind.IDENTIFIER) {
+                Name name = ((JCTree.JCIdent)((JCTree.JCMethodInvocation)expression).meth).name;
                 return name == name.table.names._this || name == name.table.names._super;
             }
         }
@@ -104,7 +104,7 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
     /**
      * 判断注解是否被忽略
      *
-     * @param param      参数代码对象
+     * @param param 参数代码对象
      * @param annotation 注解类型
      * @return true/false
      */
@@ -140,20 +140,21 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
     /**
      * 构建参数校验处理代码块
      *
-     * @param param      参数代码对象
+     * @param param 参数代码对象
      * @param annotation 注解类型
      */
     protected void buildValidateBlock(Symbol.VarSymbol param, Class<? extends Annotation> annotation) {
         JCTree.JCStatement condition;
-        if (!this.isIgnoreAnnotation(param, annotation) && (condition = this.buildValidateCondition(param, annotation)) != null) {
-            this.appendValidateBlock((Symbol.MethodSymbol) param.owner, Arrays.asList(condition));
+        if (!this.isIgnoreAnnotation(param, annotation)
+            && (condition = this.buildValidateCondition(param, annotation)) != null) {
+            this.appendValidateBlock((Symbol.MethodSymbol)param.owner, Arrays.asList(condition));
         }
     }
 
     /**
      * 构建参数校验处理代码块
      *
-     * @param method     方法代码对象
+     * @param method 方法代码对象
      * @param annotation 注解类型
      */
     protected void buildValidateBlock(Symbol.MethodSymbol method, Class<? extends Annotation> annotation) {
@@ -161,7 +162,8 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
             List<JCTree.JCStatement> conditions = new ArrayList<>(method.params.size());
             for (Symbol.VarSymbol param : method.params) {
                 JCTree.JCStatement condition;
-                if (!this.isIgnoreAnnotation(param, annotation) && (condition = this.buildValidateCondition(param, annotation)) != null) {
+                if (!this.isIgnoreAnnotation(param, annotation)
+                    && (condition = this.buildValidateCondition(param, annotation)) != null) {
                     conditions.add(condition);
                 }
             }
@@ -174,15 +176,17 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
     /**
      * 添加参数校验代码块
      *
-     * @param method     方法代码对象
+     * @param method 方法代码对象
      * @param conditions 校验代码逻辑列表
      */
     private void appendValidateBlock(Symbol.MethodSymbol method, List<JCTree.JCStatement> conditions) {
         if (conditions.isEmpty()) {
             return;
         }
-        JCTree.JCBlock body = trees.getTree(method).body; // 获取方法对应的方法体
-        if (method.isConstructor() && this.isConstructorInvocation(body.stats.head)) { // 如果方法体存在构造方法调用则将构造方法调用代码放在第一行
+        // 获取方法对应的方法体
+        JCTree.JCBlock body = trees.getTree(method).body;
+        if (method.isConstructor() && this.isConstructorInvocation(body.stats.head)) {
+            // 如果方法体存在构造方法调用则将构造方法调用代码放在第一行
             ListBuffer stats = ListBuffer.of(body.stats.head);
             Iterator<JCTree.JCStatement> iterator = body.stats.iterator();
             iterator.next();
@@ -193,7 +197,8 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
                 stats.append(iterator.next());
             }
             body.stats = stats.toList();
-        } else { // 将参数校验代码逻辑插入到方法体开始位置
+        } else {
+            // 将参数校验代码逻辑插入到方法体开始位置
             for (int i = conditions.size() - 1; i > -1; i--) {
                 body.stats = body.stats.prepend(conditions.get(i));
             }
@@ -203,9 +208,10 @@ public abstract class AbstractValidateProcessor extends AbstractProcessor {
     /**
      * 构建语法树参数验证条件
      *
-     * @param param      参数代码对象
+     * @param param 参数代码对象
      * @param annotation 注解类型
      * @return 验证条件表达式对象
      */
-    protected abstract JCTree.JCIf buildValidateCondition(Symbol.VarSymbol param, Class<? extends Annotation> annotation);
+    protected abstract JCTree.JCIf buildValidateCondition(Symbol.VarSymbol param,
+        Class<? extends Annotation> annotation);
 }

@@ -1,9 +1,9 @@
 package com.arsframework.annotation;
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 参数值不等于比较注解，适用于数字、java.lang.Comparable类型参数
@@ -16,7 +16,7 @@ public @interface Ne {
     /**
      * 默认异常信息
      */
-    String DEFAULT_EXCEPTION_MESSAGE = "The value of argument '%s' must not be equal to argument '%s'";
+    String DEFAULT_EXCEPTION_MESSAGE = "Argument '%s' must not be equal to '%s'";
 
     /**
      * 获取被比较参数名称

@@ -1,9 +1,9 @@
 package com.arsframework.annotation;
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 参数最小值校验表达式，适用于数字、枚举、日期、字符序列、数组、字典、集合、列表类型参数
@@ -16,7 +16,7 @@ public @interface Min {
     /**
      * 默认异常信息
      */
-    String DEFAULT_EXCEPTION_MESSAGE = "The value of argument '%s' must be greater than or equal to %d";
+    String DEFAULT_EXCEPTION_MESSAGE = "Argument '%s' must be greater than or equal to %d";
 
     /**
      * 获取参数最小值
